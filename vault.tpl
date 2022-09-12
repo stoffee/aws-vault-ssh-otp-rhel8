@@ -97,8 +97,8 @@ EOF
 
 
 cat << EOF > /etc/vault.d/vault.hcl
-storage "postgresql" {
-  connection_url = "postgres://${vaultdb_username}:${vaultdb_password}@${vault_db_address}:5432/vault"
+storage "file" {
+  path = "/opt/vault/data"
 }
 listener "tcp" {
   address     = "0.0.0.0:8200"
@@ -154,7 +154,6 @@ echo "SSL Cert Info" ; \\
 sudo openssl x509 -noout -text -in /etc/nginx/certs/yet.crt |grep -E "Validity|Not|Issuer|CA Issuers"
 EOT
 
-PGPASSWORD=${vaultdb_password} psql -h ${vault_db_address} -U ${vaultdb_username} -d vault -f /opt/vault/vault_create.sql
 
 chmod 0664 /lib/systemd/system/vault.service
 systemctl daemon-reload
@@ -329,44 +328,6 @@ sleep 10
 systemctl restart nginx >> /opt/vault/setup/bootstrap_config.log
 systemctl status nginx >> /opt/vault/setup/bootstrap_config.log
 
-
-
-##
-###
-#####
-## configure postgres ##
-#####
-###
-##
-
-vault login $ROOT_TOKEN
-
-vault secrets enable database
-echo "vault write database/config/proddb \
-    plugin_name=postgresql-database-plugin \
-    allowed_roles=\"admin-role\" \
-    connection_url=\"postgresql://{{username}}:{{password}}@${db_address}:5432/proddb\" \
-    username=\"${proddb_username}\" \
-    password=\"${proddb_password}\" " >> /opt/vault/setup/bootstrap_config.log
-vault write database/config/proddb \
-    plugin_name=postgresql-database-plugin \
-    allowed_roles="admin-role" \
-    connection_url="postgresql://{{username}}:{{password}}@${db_address}:5432/proddb" \
-    username="${proddb_username}" \
-    password="${proddb_password}" >> /opt/vault/setup/bootstrap_config.log
-
-vault write database/roles/admin-role \
-    db_name=proddb \
-    creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
-        GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
-    default_ttl="1h" \
-    max_ttl="24h" >> /opt/vault/setup/bootstrap_config.log
-# call this with vault read database/creds/admin-role
-echo "vault read database/creds/admin-role" >> /opt/vault/setup/admin-role-db
-vault read database/creds/admin-role 2>>/opt/vault/setup/bootstrap_config.log 1>> /opt/vault/setup/admin-role-db
-
-
-
 ##
 ###
 #####
@@ -391,7 +352,6 @@ base64 --decode <<< "$CIPHERTEXT" >>  /opt/vault/setup/creditcard_number
 ##
 ## finish off
 ##
-sleep 15 && vault write -force database/rotate-root/proddb 2>>/opt/vault/setup/bootstrap_config.log 1>> /opt/vault/setup/admin-role-db
 echo "All Done"  >> /opt/vault/setup/bootstrap_config.log
 
 ##

@@ -28,7 +28,7 @@ variable "vault_address" {
 
 variable "namespace" {
   description = "Prepended name of all resources"
-  default     = "vault-db-ssh"
+  default     = "vault-ssh-otp"
 }
 
 variable "owner" {
