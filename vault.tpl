@@ -50,7 +50,7 @@ if [[ ! -z $${YUM} ]]; then
   logger "Setting up user $${USER} for RHEL/CentOS"
   user_rhel
   yum install -y unzip nginx jq sshpass wget policycoreutils-python-utils 
-#  yum -y groupinstall "Development Tools"
+  yum -y groupinstall "Development Tools"
   yum -y install selinux-policy-devel
   setenforce 0
 elif [[ ! -z $${APT_GET} ]]; then
