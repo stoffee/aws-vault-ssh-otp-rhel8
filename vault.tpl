@@ -145,10 +145,6 @@ vault login $ROOT_TOKEN >> /opt/vault/setup/bootstrap_config.log
 
 vault login $ROOT_TOKEN
 
-##
-## finish off
-##
-echo "All Done"  >> /opt/vault/setup/bootstrap_config.log
 
 ##
 ## setup ssh otp
@@ -183,6 +179,10 @@ make -f /usr/share/selinux/devel/Makefile vault-otp.pp
 semodule -i vault-otp.pp
 
 
+##
+## finish off
+##
+echo "All Done"  >> /opt/vault/setup/bootstrap_config.log
 
 hostnamectl set-hostname vault
 shutdown -r now

@@ -89,12 +89,28 @@ chown root:root /usr/local/bin/vault-ssh-helper
 
 mkdir -p /etc/vault-ssh-helper.d/
 cat << POF > /etc/vault-ssh-helper.d/config.hcl
-vault_addr = "http://${vault_address}:8200"
+vault_addr = http://${vault_address}:8200
 tls_skip_verify = true
 ssh_mount_point = "ssh"
 namespace = "cd"
 allowed_roles = "*"
 POF
+
+
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.orig
+#sed -i 's/#AuthorizedKeysCommand none/AuthorizedKeysCommand \/usr\/local\/bin\/vault-ssh-helper -config=\/etc\/vault-ssh-helper.d\/config.hcl -dev -role=ssh-role/g' /etc/ssh/sshd_config
+sed -i 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication yes' /etc/ssh/sshd_config
+sed -i 's/ChallengeResponseAuthentication no/#ChallengeResponseAuthentication no' /etc/ssh/sshd_config
+sed -i 's/#UsePAM yes/UsePAM yes' /etc/ssh/sshd_config
+sed -i 's/UsePAM no/#UsePAM no' /etc/ssh/sshd_config
+sed -i 's/#PasswordAuthentication no/PasswordAuthentication no' /etc/ssh/sshd_config
+sed -i 's/PasswordAuthentication yes/#PasswordAuthentication yes' /etc/ssh/sshd_config
+systemctl restart sshd
+
+cp /etc/pam.d/sshd /etc/pam.d/sshd.orig
+sed -i 's/auth substack password-auth/#auth substack password-auth' /etc/pam.d/sshd 
+sed -i 's/auth substack password-auth/#auth substack password-auth' /etc/pam.d/sshd 
+echo "auth requisite pam_exec.so quiet expose_authtok log=/var/log/vault-ssh.log /usr/local/bin/vault-ssh-helper -dev -config=/etc/vault-ssh-helper.d/config.hcl" | tee -a /etc/pam.d/sshd
 
 cat << FOF > /opt/vault/setup/vault-otp.te
 module vault-otp 1.0;
