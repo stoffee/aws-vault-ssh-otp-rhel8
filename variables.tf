@@ -43,7 +43,7 @@ variable "instance_type" {
   default = "t2.micro"
 }
 
-variable "ssh_host_public_ip" {
+variable "sshhost_address" {
   description = "address of the ssh host"
   default     = "aws_instance.ssh[0].public_ip"
 }
