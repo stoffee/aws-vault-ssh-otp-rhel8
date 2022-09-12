@@ -27,7 +27,6 @@ data "template_file" "ssh" {
   vars = {
     vault_url  = var.vault_url
     aws_region = var.aws_region
-    #vault_address = aws_instance.ssh[0].public_ip
 
   }
 }
