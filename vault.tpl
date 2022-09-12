@@ -183,7 +183,6 @@ echo "All Done"  >> /opt/vault/setup/bootstrap_config.log
 vault login $ROOT_TOKEN
 vault secrets enable -path=ssh-otp ssh
 vault write ssh/roles/otp_key_role key_type=otp default_user=stoffee cidr_list=0.0.0.0/0
-#vault write ssh/creds/otp_key_role ip=${ssh_host_public_ip} >> /opt/vault/setup/bootstrap_config.log
 
 
 hostnamectl set-hostname vault
