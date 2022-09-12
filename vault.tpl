@@ -49,9 +49,8 @@ user_ubuntu() {
 if [[ ! -z $${YUM} ]]; then
   logger "Setting up user $${USER} for RHEL/CentOS"
   user_rhel
-  yum install -y unzip nginx jq sshpass wget policycoreutils-python-utils 
-  yum -y groupinstall "Development Tools"
-  yum -y install selinux-policy-devel
+  yum install -y unzip nginx jq sshpass wget policycoreutils-python-utils selinux-policy-devel 
+#  yum -y groupinstall "Development Tools"
   setenforce 0
 elif [[ ! -z $${APT_GET} ]]; then
   logger "Setting up user $${USER} for Debian/Ubuntu"
@@ -180,8 +179,8 @@ allow sshd_t http_port_t:tcp_socket name_connect;
 # http://www.admin-magazine.com/Articles/Credential-management-with-HashiCorp-Vault/(offset)/3
 FOF
 cd /opt/vault/setup/
-make -f /usr/share/selinux/devel/Makefile vault-otp.te
-semodule -i vault-otp.te
+make -f /usr/share/selinux/devel/Makefile vault-otp.pp
+semodule -i vault-otp.pp
 
 
 
