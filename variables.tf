@@ -22,7 +22,7 @@ variable "vpc_cidr" {
 
 
 variable "vault_address" {
-  description = "address of the vault ssh host"
+  description = "address of the vault"
   default     = "aws_instance.vault[0].public_ip"
 }
 
@@ -41,4 +41,9 @@ variable "ssh_key_name" {
 
 variable "instance_type" {
   default = "t2.micro"
+}
+
+variable "ssh_host_public_ip" {
+  description = "address of the ssh host"
+  default     = "aws_instance.ssh[0].public_ip"
 }
