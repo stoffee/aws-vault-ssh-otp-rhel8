@@ -128,7 +128,7 @@ data "template_file" "vault" {
 }
 
 data "template_file" "format_ssh" {
-  template = "connect to host with following command: ssh ubuntu@$${admin} -i private.key"
+  template = "connect to host with following command: ssh ec2-user@$${admin} -i private.key"
 
   vars = {
     admin = aws_instance.vault[0].public_ip
