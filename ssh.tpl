@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-#apt update
-#apt install -y unzip nginx jq sshpass postgresql-client
-
 USER="vault"
 COMMENT="Hashicorp Vault user"
 GROUP="vault"

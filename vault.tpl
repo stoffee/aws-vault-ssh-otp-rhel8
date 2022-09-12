@@ -50,7 +50,7 @@ if [[ ! -z $${YUM} ]]; then
   logger "Setting up user $${USER} for RHEL/CentOS"
   user_rhel
   yum install -y unzip nginx jq sshpass wget policycoreutils-python-utils 
-  yum -y groupinstall "Development Tools"
+#  yum -y groupinstall "Development Tools"
   yum -y install selinux-policy-devel
   setenforce 0
 elif [[ ! -z $${APT_GET} ]]; then
@@ -159,12 +159,28 @@ vault secrets enable -path=ssh ssh
 vault write ssh/roles/otp_key_role key_type=otp default_user=stoffee cidr_list=0.0.0.0/0
 # Logout and Login using vault OTP one time so that it's in the audit_log
 vault write ssh/creds/otp_key_role ip=8.8.8.8
-grep sshd_t /var/log/audit/audit.log | audit2allow -m vault-helper > vault-helper.te
-make -f /usr/share/selinux/devel/Makefile vault-helper.pp
-semodule -i vault-helper.pp
-semodule -l | grep vault
-setenforce 1
+cat << FOF > /opt/vault/setup/vault-otp.te
+module vault-otp 1.0;
 
+require {
+    type var_log_t;
+    type sshd_t;
+    type http_port_t;
+    class file open;
+    class file create;
+    class tcp_socket name_connect;
+}
+
+allow sshd_t var_log_t:file open;
+allow sshd_t var_log_t:file create;
+allow sshd_t http_port_t:tcp_socket name_connect;
+
+# references:
+# https://github.com/hashicorp/vault-ssh-helper/issues/31#issuecomment-335565489
+# http://www.admin-magazine.com/Articles/Credential-management-with-HashiCorp-Vault/(offset)/3
+FOF
+make -f /usr/share/selinux/devel/Makefile /opt/vault/setup/vault-otp.pp
+semodule -i /opt/vault/setup/vault-otp.pp
 
 hostnamectl set-hostname vault
 shutdown -r now
