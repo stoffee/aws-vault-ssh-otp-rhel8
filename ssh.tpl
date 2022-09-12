@@ -121,3 +121,4 @@ make -f /usr/share/selinux/devel/Makefile vault-otp.pp
 semodule -i vault-otp.pp
 
 hostnamectl set-hostname ssh
+shutdown -r now
