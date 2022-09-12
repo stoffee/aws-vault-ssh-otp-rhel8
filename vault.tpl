@@ -49,7 +49,10 @@ user_ubuntu() {
 if [[ ! -z $${YUM} ]]; then
   logger "Setting up user $${USER} for RHEL/CentOS"
   user_rhel
-  yum install -y unzip nginx jq sshpass wget
+  yum install -y unzip nginx jq sshpass wget policycoreutils-python-utils 
+  yum -y groupinstall "Development Tools"
+  yum -y install selinux-policy-devel
+  setenforce 0
 elif [[ ! -z $${APT_GET} ]]; then
   logger "Setting up user $${USER} for Debian/Ubuntu"
   user_ubuntu
@@ -154,6 +157,13 @@ echo "All Done"  >> /opt/vault/setup/bootstrap_config.log
 vault login $ROOT_TOKEN
 vault secrets enable -path=ssh ssh
 vault write ssh/roles/otp_key_role key_type=otp default_user=stoffee cidr_list=0.0.0.0/0
+# Logout and Login using vault OTP one time so that it's in the audit_log
+vault write ssh/creds/otp_key_role ip=${ssh_host_public_ip}
+#grep sshd_t /var/log/audit/audit.log | audit2allow -m vault-helper > vault-helper.te
+#make -f /usr/share/selinux/devel/Makefile vault-helper.pp
+#semodule -i vault-helper.pp
+#semodule -l | grep vault
+#setenforce 1
 
 
 hostnamectl set-hostname vault
