@@ -1,15 +1,12 @@
 output "vault_ssh" {
-  value = "ssh -i private.key ec2-user@${aws_instance.vault[0].public_ip}"
-  description = "Connect to Vault via SSH"
+  value = "Connect to Vault via SSH ssh: -i private.key ec2-user@${aws_instance.vault[0].public_ip}"
 }
 
 output "rhel_ssh" {
-  value = "ssh -i private.key ec2-user@${aws_instance.vault[0].public_ip}"
-  description = "Connect to Vault via SSH"
+  value = "Connect to RHEL ssh host via:  ssh -i private.key ec2-user@${aws_instance.vault[0].public_ip}"
 }
 output "vault_url" {
-  value = "http://${aws_instance.vault[0].public_ip}:8200/ui"
-  description = "Vault web interface"
+  value = "Vault web Interface http://${aws_instance.vault[0].public_ip}:8200/ui"
 }
 
 #output "connections" {
@@ -22,7 +19,6 @@ output "vault_url" {
 
 output "ssh" {
   value = <<SSH
-----
-ssh -i signed-cert.pub -i ~/.ssh/id_rsa ec2-user@${aws_instance.ssh[0].public_dns}
+value = "ssh -i signed-cert.pub -i ~/.ssh/id_rsa ec2-user@${aws_instance.ssh[0].public_dns}"
 SSH
 }

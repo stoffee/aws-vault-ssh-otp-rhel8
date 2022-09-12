@@ -152,7 +152,7 @@ echo "All Done"  >> /opt/vault/setup/bootstrap_config.log
 ## setup ssh otp
 ##
 vault login $ROOT_TOKEN
-vault secrets enable -path=ssh-otp ssh
+vault secrets enable -path=ssh ssh
 vault write ssh/roles/otp_key_role key_type=otp default_user=stoffee cidr_list=0.0.0.0/0
 
 
