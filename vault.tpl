@@ -49,7 +49,7 @@ user_ubuntu() {
 if [[ ! -z $${YUM} ]]; then
   logger "Setting up user $${USER} for RHEL/CentOS"
   user_rhel
-  yum install -y unzip nginx jq sshpass 
+  yum install -y unzip nginx jq sshpass wget
 elif [[ ! -z $${APT_GET} ]]; then
   logger "Setting up user $${USER} for Debian/Ubuntu"
   user_ubuntu
@@ -140,35 +140,6 @@ sleep 12
 vault operator init -recovery-shares=1 -recovery-threshold=1 >> /opt/vault/setup/vault.unseal.info
 ROOT_TOKEN=`cat /opt/vault/setup/vault.unseal.info |grep Root|awk '{print $4}'`
 vault login $ROOT_TOKEN >> /opt/vault/setup/bootstrap_config.log
-
-wget https://releases.hashicorp.com/consul-template/0.22.0/consul-template_0.22.0_linux_amd64.tgz >> /opt/vault/setup/bootstrap_config.log
-tar zxvf consul-template_0.22.0_linux_amd64.tgz >> /opt/vault/setup/bootstrap_config.log
-mv consul-template /usr/local/bin/ >> /opt/vault/setup/bootstrap_config.log
-ln -s /usr/local/bin/consul-template /usr/bin/consul-template >> /opt/vault/setup/bootstrap_config.log
-
-
-cat << EOF > /etc/systemd/system/consul-template.service
-[Unit]
-Description=consul-template
-Requires=network-online.target
-After=network-online.target
-[Service]
-EnvironmentFile=-/etc/sysconfig/consul-template
-Restart=on-failure
-ExecStart=/usr/local/bin/consul-template $OPTIONS -config='/etc/consul-template.d/pki-demo.hcl'
-KillSignal=SIGINT
-ExecReload=/bin/kill --signal HUP
-KillMode=process
-Restart=on-failure
-RestartSec=5
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo systemctl daemon-reload >> /opt/vault/setup/bootstrap_config.log
-sudo systemctl enable consul-template.service >> /opt/vault/setup/bootstrap_config.log
-sudo systemctl start consul-template.service >> /opt/vault/setup/bootstrap_config.log
-sudo systemctl status consul-template.service >> /opt/vault/setup/bootstrap_config.log
 
 vault login $ROOT_TOKEN
 

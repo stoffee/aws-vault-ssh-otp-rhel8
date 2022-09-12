@@ -52,7 +52,7 @@ user_ubuntu() {
 if [[ ! -z $${YUM} ]]; then
   logger "Setting up user $${USER} for RHEL/CentOS"
   user_rhel
-  yum install -y unzip nginx jq sshpass 
+  yum install -y unzip nginx jq sshpass wget
 elif [[ ! -z $${APT_GET} ]]; then
   logger "Setting up user $${USER} for Debian/Ubuntu"
   user_ubuntu
