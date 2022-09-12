@@ -179,8 +179,11 @@ allow sshd_t http_port_t:tcp_socket name_connect;
 # https://github.com/hashicorp/vault-ssh-helper/issues/31#issuecomment-335565489
 # http://www.admin-magazine.com/Articles/Credential-management-with-HashiCorp-Vault/(offset)/3
 FOF
-make -f /usr/share/selinux/devel/Makefile /opt/vault/setup/vault-otp.pp
-semodule -i /opt/vault/setup/vault-otp.pp
+cd /opt/vault/setup/
+make -f /usr/share/selinux/devel/Makefile vault-otp.te
+semodule -i vault-otp.te
+
+
 
 hostnamectl set-hostname vault
 shutdown -r now

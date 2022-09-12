@@ -69,6 +69,7 @@ unzip -o /tmp/$${VAULT_ZIP} -d /usr/local/bin/
 chmod 0755 /usr/local/bin/vault
 chown vault:vault /usr/local/bin/vault
 ln -s /usr/local/bin/vault /usr/bin/vault
+mkdir -p /opt/vault/setup/
 
 cat << EOF > /etc/profile.d/vault.sh
 export VAULT_ADDR=http://${vault_address}:8200
@@ -78,5 +79,43 @@ EOF
 source /etc/profile.d/vault.sh
 echo "source /etc/profile.d/vault.sh" >> ~ec2-user/.bashrc
 
+
+wget https://releases.hashicorp.com/vault-ssh-helper/0.2.1/vault-ssh-helper_0.2.1_linux_amd64.zip
+unzip -q vault-ssh-helper_0.2.1_linux_amd64.zip -d /usr/local/bin
+chmod 0755 /usr/local/bin/vault-ssh-helper
+chown root:root /usr/local/bin/vault-ssh-helper
+
+mkdir -p /etc/vault-ssh-helper.d/
+cat << POF > /etc/vault-ssh-helper.d/config.hcl
+vault_addr = "http://${vault_address}:8200"
+tls_skip_verify = true
+ssh_mount_point = "ssh"
+namespace = "cd"
+allowed_roles = "*"
+POF
+
+cat << FOF > /opt/vault/setup/vault-otp.te
+module vault-otp 1.0;
+
+require {
+    type var_log_t;
+    type sshd_t;
+    type http_port_t;
+    class file open;
+    class file create;
+    class tcp_socket name_connect;
+}
+
+allow sshd_t var_log_t:file open;
+allow sshd_t var_log_t:file create;
+allow sshd_t http_port_t:tcp_socket name_connect;
+
+# references:
+# https://github.com/hashicorp/vault-ssh-helper/issues/31#issuecomment-335565489
+# http://www.admin-magazine.com/Articles/Credential-management-with-HashiCorp-Vault/(offset)/3
+FOF
+cd /opt/vault/setup/
+make -f /usr/share/selinux/devel/Makefile vault-otp.te
+semodule -i vault-otp.te
 
 hostnamectl set-hostname ssh
