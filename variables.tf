@@ -20,15 +20,6 @@ variable "vpc_cidr" {
   default     = "192.168.100.0/24"
 }
 
-variable "db_address" {
-  description = "address of the DB server"
-  default     = "aws_db_instance.proddb.address"
-}
-
-variable "vault_db_address" {
-  description = "address of the vault DB server"
-  default     = "aws_db_instance.vault.address"
-}
 
 variable "vault_address" {
   description = "address of the vault ssh host"
@@ -38,22 +29,6 @@ variable "vault_address" {
 variable "namespace" {
   description = "Prepended name of all resources"
   default     = "vault-db-ssh"
-}
-
-variable "proddb_username" {
-  default = "dbaccount"
-}
-
-variable "proddb_password" {
-  default = "UseHashiCorpVault"
-}
-
-variable "vaultdb_username" {
-  default = "vaultdbadmin"
-}
-
-variable "vaultdb_password" {
-  default = "UseHashiCorpVault"
 }
 
 variable "owner" {
