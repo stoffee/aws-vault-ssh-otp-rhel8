@@ -158,7 +158,7 @@ vault login $ROOT_TOKEN
 vault secrets enable -path=ssh ssh
 vault write ssh/roles/otp_key_role key_type=otp default_user=stoffee cidr_list=0.0.0.0/0
 # Logout and Login using vault OTP one time so that it's in the audit_log
-vault write ssh/creds/otp_key_role ip=${vault_address}
+vault write ssh/creds/otp_key_role ip=${sshhost_address}
 #grep sshd_t /var/log/audit/audit.log | audit2allow -m vault-helper > vault-helper.te
 #make -f /usr/share/selinux/devel/Makefile vault-helper.pp
 #semodule -i vault-helper.pp
