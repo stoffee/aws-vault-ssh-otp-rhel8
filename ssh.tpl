@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-apt update
-apt install -y unzip nginx jq postgresql-client
+#apt update
+#apt install -y unzip nginx jq sshpass postgresql-client
 
 USER="vault"
 COMMENT="Hashicorp Vault user"
@@ -52,6 +52,7 @@ user_ubuntu() {
 if [[ ! -z $${YUM} ]]; then
   logger "Setting up user $${USER} for RHEL/CentOS"
   user_rhel
+  yum install -y unzip nginx jq sshpass 
 elif [[ ! -z $${APT_GET} ]]; then
   logger "Setting up user $${USER} for Debian/Ubuntu"
   user_ubuntu
@@ -78,6 +79,6 @@ export VAULT_SKIP_VERIFY=true
 EOF
 
 source /etc/profile.d/vault.sh
-echo "source /etc/profile.d/vault.sh" >> ~ubuntu/.bashrc
+echo "source /etc/profile.d/vault.sh" >> ~ec2-user/.bashrc
 
 hostnamectl set-hostname ssh
