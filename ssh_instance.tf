@@ -1,4 +1,5 @@
 resource "aws_instance" "ssh" {
+  depends_on = [ aws_instance.vault ]
   ami           = data.aws_ami.rhel_8_5.id
   instance_type = var.instance_type
   count         = 1
