@@ -89,10 +89,9 @@ chown root:root /usr/local/bin/vault-ssh-helper
 
 mkdir -p /etc/vault-ssh-helper.d/
 cat << POF > /etc/vault-ssh-helper.d/config.hcl
-vault_addr = http://${vault_address}:8200
+vault_addr = http://${vault_address}:8200"
 tls_skip_verify = true
 ssh_mount_point = "ssh"
-namespace = "cd"
 allowed_roles = "*"
 POF
 
@@ -109,6 +108,8 @@ systemctl restart sshd
 cp /etc/pam.d/sshd /etc/pam.d/sshd.orig
 sed -i 's/auth       substack     password-auth/#auth       substack     password-auth/' /etc/pam.d/sshd 
 sed -i -e "2i auth requisite pam_exec.so quiet expose_authtok log=/var/log/vault-ssh.log /usr/local/bin/vault-ssh-helper -dev -config=/etc/vault-ssh-helper.d/config.hcl" /etc/pam.d/sshd
+
+sudo useradd -d /home/stoffee -m stoffee
 
 cat << FOF > /opt/vault/setup/vault-otp.te
 module vault-otp 1.0;
