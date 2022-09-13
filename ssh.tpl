@@ -89,7 +89,7 @@ chown root:root /usr/local/bin/vault-ssh-helper
 
 mkdir -p /etc/vault-ssh-helper.d/
 cat << POF > /etc/vault-ssh-helper.d/config.hcl
-vault_addr = http://${vault_address}:8200"
+vault_addr = "http://${vault_address}:8200"
 tls_skip_verify = true
 ssh_mount_point = "ssh"
 allowed_roles = "*"
