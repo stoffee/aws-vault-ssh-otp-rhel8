@@ -25,8 +25,9 @@ data "template_file" "ssh" {
   template = file("ssh.tpl")
 
   vars = {
-    vault_url  = var.vault_address
+    vault_url  = var.vault_url
     aws_region = var.aws_region
+    vault_address = aws_instance.vault[0].public_dns
 
   }
 }

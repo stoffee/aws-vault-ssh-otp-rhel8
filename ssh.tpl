@@ -74,7 +74,7 @@ ln -s /usr/local/bin/vault /usr/bin/vault
 mkdir -p /opt/vault/setup/
 
 cat << EOF > /etc/profile.d/vault.sh
-export VAULT_ADDR=http://${vault_url}:8200
+export VAULT_ADDR=http://${var.vault_address}:8200
 export VAULT_SKIP_VERIFY=true
 EOF
 
@@ -89,7 +89,7 @@ chown root:root /usr/local/bin/vault-ssh-helper
 
 mkdir -p /etc/vault-ssh-helper.d/
 cat << POF > /etc/vault-ssh-helper.d/config.hcl
-vault_addr = http://${vault_url}:8200
+vault_addr = http://${var.vault_address}:8200
 tls_skip_verify = true
 ssh_mount_point = "ssh"
 namespace = "cd"
@@ -98,7 +98,6 @@ POF
 
 
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config.orig
-#sed -i 's/#AuthorizedKeysCommand none/AuthorizedKeysCommand \/usr\/local\/bin\/vault-ssh-helper -config=\/etc\/vault-ssh-helper.d\/config.hcl -dev -role=ssh-role/g' /etc/ssh/sshd_config
 sed -i 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication yes' /etc/ssh/sshd_config
 sed -i 's/ChallengeResponseAuthentication no/#ChallengeResponseAuthentication no' /etc/ssh/sshd_config
 sed -i 's/#UsePAM yes/UsePAM yes' /etc/ssh/sshd_config
