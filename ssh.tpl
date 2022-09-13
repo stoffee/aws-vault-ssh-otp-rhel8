@@ -98,17 +98,16 @@ POF
 
 
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config.orig
-sed -i 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication yes' /etc/ssh/sshd_config
-sed -i 's/ChallengeResponseAuthentication no/#ChallengeResponseAuthentication no' /etc/ssh/sshd_config
-sed -i 's/#UsePAM yes/UsePAM yes' /etc/ssh/sshd_config
-sed -i 's/UsePAM no/#UsePAM no' /etc/ssh/sshd_config
-sed -i 's/#PasswordAuthentication no/PasswordAuthentication no' /etc/ssh/sshd_config
-sed -i 's/PasswordAuthentication yes/#PasswordAuthentication yes' /etc/ssh/sshd_config
+sed -i 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication yes/' /etc/ssh/sshd_config
+sed -i 's/ChallengeResponseAuthentication no/#ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/#UsePAM yes/UsePAM yes/' /etc/ssh/sshd_config
+sed -i 's/UsePAM no/#UsePAM no/' /etc/ssh/sshd_config
+sed -i 's/#PasswordAuthentication no/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/PasswordAuthentication yes/#PasswordAuthentication yes/' /etc/ssh/sshd_config
 systemctl restart sshd
 
 cp /etc/pam.d/sshd /etc/pam.d/sshd.orig
-sed -i 's/auth substack password-auth/#auth substack  password-auth' /etc/pam.d/sshd 
-sed -i 's/auth substack password-auth/#auth substack  password-auth' /etc/pam.d/sshd 
+sed -i 's/auth       substack     password-auth/#auth       substack     password-auth/' /etc/pam.d/sshd 
 sed -i -e "2i auth requisite pam_exec.so quiet expose_authtok log=/var/log/vault-ssh.log /usr/local/bin/vault-ssh-helper -dev -config=/etc/vault-ssh-helper.d/config.hcl" /etc/pam.d/sshd
 
 cat << FOF > /opt/vault/setup/vault-otp.te
